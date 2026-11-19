@@ -1,0 +1,64 @@
+-- ====================================================================
+-- SONA SCHEDULER: INITIAL SEED DATA
+-- Default departments (ADS, IT), regulations, batches, subjects
+-- ====================================================================
+
+-- 1. Departments
+INSERT INTO departments (id, code, name, is_active)
+VALUES
+    ('11111111-1111-1111-1111-111111111101', 'ADS', 'Artificial Intelligence and Data Science', TRUE),
+    ('11111111-1111-1111-1111-111111111102', 'IT', 'Information Technology', TRUE)
+ON CONFLICT (code) DO NOTHING;
+
+-- 2. Regulations
+INSERT INTO regulations (id, code, start_year, description)
+VALUES
+    ('22222222-2222-2222-2222-222222222201', 'R2019', 2019, 'Sona College of Technology Academic Regulation 2019'),
+    ('22222222-2222-2222-2222-222222222202', 'R2021', 2021, 'Sona College of Technology Academic Regulation 2021')
+ON CONFLICT (code) DO NOTHING;
+
+-- 3. Batches
+INSERT INTO batches (id, name, start_year, end_year)
+VALUES
+    ('33333333-3333-3333-3333-333333333301', '2021-2025', 2021, 2025),
+    ('33333333-3333-3333-3333-333333333302', '2022-2026', 2022, 2026),
+    ('33333333-3333-3333-3333-333333333303', '2023-2027', 2023, 2027)
+ON CONFLICT (name) DO NOTHING;
+
+-- 4. Regulation to Batch Mappings
+INSERT INTO regulation_batches (regulation_id, batch_id, department_id)
+VALUES
+    ('22222222-2222-2222-2222-222222222202', '33333333-3333-3333-3333-333333333301', '11111111-1111-1111-1111-111111111101'), -- ADS 2021-2025 (R2021)
+    ('22222222-2222-2222-2222-222222222202', '33333333-3333-3333-3333-333333333301', '11111111-1111-1111-1111-111111111102'), -- IT 2021-2025 (R2021)
+    ('22222222-2222-2222-2222-222222222202', '33333333-3333-3333-3333-333333333302', '11111111-1111-1111-1111-111111111101'), -- ADS 2022-2026 (R2021)
+    ('22222222-2222-2222-2222-222222222202', '33333333-3333-3333-3333-333333333302', '11111111-1111-1111-1111-111111111102')  -- IT 2022-2026 (R2021)
+ON CONFLICT DO NOTHING;
+
+-- 5. Canonical Subjects
+INSERT INTO subjects (id, code, name, regulation_id, semester_number, is_common)
+VALUES
+    ('44444444-4444-4444-4444-444444444401', '21MA301', 'Transforms and Partial Differential Equations', '22222222-2222-2222-2222-222222222202', 3, TRUE),
+    ('44444444-4444-4444-4444-444444444402', '21AD301', 'Data Structures and Algorithms', '22222222-2222-2222-2222-222222222202', 3, FALSE),
+    ('44444444-4444-4444-4444-444444444403', '21IT301', 'Object Oriented Programming using Java', '22222222-2222-2222-2222-222222222202', 3, FALSE),
+    ('44444444-4444-4444-4444-444444444404', '21AD401', 'Artificial Intelligence Principles and Techniques', '22222222-2222-2222-2222-222222222202', 4, FALSE),
+    ('44444444-4444-4444-4444-444444444405', '21IT402', 'Database Management Systems', '22222222-2222-2222-2222-222222222202', 4, TRUE)
+ON CONFLICT (code, regulation_id) DO NOTHING;
+
+-- Map subjects to departments
+INSERT INTO subject_departments (subject_id, department_id)
+VALUES
+    ('44444444-4444-4444-4444-444444444401', '11111111-1111-1111-1111-111111111101'), -- Transforms in ADS
+    ('44444444-4444-4444-4444-444444444401', '11111111-1111-1111-1111-111111111102'), -- Transforms in IT
+    ('44444444-4444-4444-4444-444444444402', '11111111-1111-1111-1111-111111111101'), -- DSA in ADS
+    ('44444444-4444-4444-4444-444444444403', '11111111-1111-1111-1111-111111111102'), -- Java in IT
+    ('44444444-4444-4444-4444-444444444404', '11111111-1111-1111-1111-111111111101'), -- AI in ADS
+    ('44444444-4444-4444-4444-444444444405', '11111111-1111-1111-1111-111111111101'), -- DBMS in ADS
+    ('44444444-4444-4444-4444-444444444405', '11111111-1111-1111-1111-111111111102')  -- DBMS in IT
+ON CONFLICT DO NOTHING;
+
+-- 6. Initial CC Contacts (HODs / Remedial Incharge)
+INSERT INTO cc_contacts (name, email, phone, department_id, designation, is_active)
+VALUES
+    ('Dr. K. S. Department Head (ADS)', 'hod.ads@sonatech.ac.in', '+919876543210', '11111111-1111-1111-1111-111111111101', 'HOD', TRUE),
+    ('Dr. M. R. Department Head (IT)', 'hod.it@sonatech.ac.in', '+919876543211', '11111111-1111-1111-1111-111111111102', 'HOD', TRUE)
+ON CONFLICT DO NOTHING;
